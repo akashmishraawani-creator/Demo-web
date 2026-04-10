@@ -5,27 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI SaaS Tool</title>
   <style>
+    * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; margin: 0; background: #0f172a; color: #fff; }
     header { padding: 60px 20px; text-align: center; }
-    h1 { font-size: 40px; }
+    h1 { font-size: 40px; margin-bottom: 10px; }
     p { color: #cbd5e1; }
-    .btn { padding: 12px 20px; margin: 10px; background: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    .btn {
+      padding: 12px 24px; margin: 10px;
+      background: #3b82f6; color: #fff;
+      border: none; border-radius: 6px;
+      cursor: pointer; font-size: 16px;
+      transition: background 0.2s;
+    }
     .btn:hover { background: #2563eb; }
+    .btn:active { background: #1d4ed8; transform: scale(0.98); }
     section { padding: 60px 20px; text-align: center; }
     .features { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
     .card { background: #1e293b; padding: 20px; border-radius: 10px; width: 250px; }
     footer { padding: 20px; text-align: center; background: #020617; }
-    input[type="text"] { padding: 10px; border-radius: 6px; border: none; font-size: 16px; width: 250px; }
+    input[type="text"] {
+      padding: 12px; border-radius: 6px;
+      border: 1px solid #334155; font-size: 16px;
+      width: 280px; background: #1e293b; color: #fff;
+    }
+    #statusMsg {
+      margin-top: 12px; font-size: 16px;
+      padding: 10px 20px; border-radius: 6px;
+      display: none;
+    }
+    .success { background: #166534; color: #4ade80; display: block !important; }
+    .error   { background: #7f1d1d; color: #f87171; display: block !important; }
+
+    /* Debug box */
+    #debugBox {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #1e293b; color: #94a3b8;
+      font-size: 12px; padding: 8px 16px;
+      border-top: 1px solid #334155;
+      max-height: 120px; overflow-y: auto;
+      font-family: monospace;
+    }
   </style>
 </head>
-
 <body>
 
 <header>
   <h1>🚀 Automate Your Work with AI</h1>
   <p>Generate, send and track tasks in seconds with our powerful SaaS tool.</p>
-  <button class="btn">Get Started Free</button>
-  <button class="btn">Watch Demo</button>
+  <button class="btn" id="getStartedBtn">Get Started Free</button>
+  <button class="btn" id="watchDemoBtn">Watch Demo</button>
 </header>
 
 <section>
@@ -38,18 +66,9 @@
 <section>
   <h2>Features</h2>
   <div class="features">
-    <div class="card">
-      <h3>AI Generator</h3>
-      <p>Create content instantly using AI</p>
-    </div>
-    <div class="card">
-      <h3>Analytics</h3>
-      <p>Track performance in real-time</p>
-    </div>
-    <div class="card">
-      <h3>Automation</h3>
-      <p>Save time with smart workflows</p>
-    </div>
+    <div class="card"><h3>AI Generator</h3><p>Create content instantly using AI</p></div>
+    <div class="card"><h3>Analytics</h3><p>Track performance in real-time</p></div>
+    <div class="card"><h3>Automation</h3><p>Save time with smart workflows</p></div>
   </div>
 </section>
 
@@ -69,71 +88,110 @@
 
 <section>
   <h2>Testimonials</h2>
-  <p>"This tool saved me hours daily!" - Sartaj sheikh</p>
+  <p>"This tool saved me hours daily!" - Sartaj Sheikh</p>
 </section>
 
 <section>
   <h2>Ready to Grow?</h2>
-  <input type="text" id="name" placeholder="Enter name">
+  <input type="text" id="nameInput" placeholder="Enter your name">
   <br><br>
-  <button class="btn" id="saveBtn">Save</button>
-  <p id="statusMsg" style="color:#4ade80; display:none;">Data save ho gaya 🔥</p>
+  <button class="btn" id="saveBtn">💾 Save to Firebase</button>
+  <p id="statusMsg"></p>
 </section>
 
 <footer>
   <p>© 2026 AI SaaS Tool | Contact | Privacy Policy</p>
 </footer>
 
-<!-- ✅ FIX 1: Correct Firebase SDK version (10.x) -->
+<!-- Debug panel -->
+<div id="debugBox">🔍 Debug log starting...</div>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDyM2Ws5dzUsnZr1pRbshZ77mgB-RbrpIg",
-    authDomain: "fir-saas-5dba9.firebaseapp.com",
-    projectId: "fir-saas-5dba9",
-    storageBucket: "fir-saas-5dba9.firebasestorage.app",
-    messagingSenderId: "261638555346",
-    appId: "1:261638555346:web:7007405a81339945218f0b",
-    measurementId: "G-XZY2PDGJ9H"
-  };
+  // ─── DEBUG HELPER ───────────────────────────────────────────
+  function log(msg, color = "#94a3b8") {
+    console.log(msg);
+    const box = document.getElementById("debugBox");
+    const line = document.createElement("div");
+    line.style.color = color;
+    line.textContent = "› " + msg;
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight;
+  }
 
-  // ✅ FIX 2: Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getFirestore(app);
+  function showStatus(msg, type) {
+    const el = document.getElementById("statusMsg");
+    el.textContent = msg;
+    el.className = type; // 'success' or 'error'
+    setTimeout(() => { el.className = ""; el.style.display = "none"; }, 4000);
+  }
 
-  // ✅ FIX 3: Event listener INSIDE the module (not outside)
-  document.getElementById("saveBtn").addEventListener("click", async () => {
-    const name = document.getElementById("name").value.trim();
-
-    // ✅ FIX 4: Validate empty input
-    if (!name) {
-      alert("Please enter a name first!");
-      return;
-    }
-
-    try {
-      await addDoc(collection(db, "users"), {
-        name: name,
-        timestamp: new Date()
-      });
-
-      // ✅ FIX 5: Show success message on page (better than alert)
-      const msg = document.getElementById("statusMsg");
-      msg.style.display = "block";
-      document.getElementById("name").value = "";
-
-      setTimeout(() => { msg.style.display = "none"; }, 3000);
-
-    } catch (e) {
-      console.error("Firebase Error:", e);
-      alert("Error aa gaya ❌: " + e.message);
-    }
+  // ─── NON-FIREBASE BUTTONS ───────────────────────────────────
+  document.getElementById("getStartedBtn").addEventListener("click", () => {
+    log("Get Started clicked ✅", "#4ade80");
+    alert("Welcome! Sign up coming soon 🚀");
   });
-</script>
 
+  document.getElementById("watchDemoBtn").addEventListener("click", () => {
+    log("Watch Demo clicked ✅", "#4ade80");
+    alert("Demo video coming soon 🎬");
+  });
+
+  log("Page loaded. Connecting to Firebase...", "#facc15");
+
+  // ─── FIREBASE SETUP ─────────────────────────────────────────
+  let db;
+  try {
+    const { initializeApp }  = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js");
+    const { getFirestore, collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+
+    const firebaseConfig = {
+      apiKey:            "AIzaSyDyM2Ws5dzUsnZr1pRbshZ77mgB-RbrpIg",
+      authDomain:        "fir-saas-5dba9.firebaseapp.com",
+      projectId:         "fir-saas-5dba9",
+      storageBucket:     "fir-saas-5dba9.firebasestorage.app",
+      messagingSenderId: "261638555346",
+      appId:             "1:261638555346:web:7007405a81339945218f0b",
+      measurementId:     "G-XZY2PDGJ9H"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    log("Firebase connected ✅", "#4ade80");
+
+    // ─── SAVE BUTTON ──────────────────────────────────────────
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const name = document.getElementById("nameInput").value.trim();
+      log("Save button clicked. Name = '" + name + "'");
+
+      if (!name) {
+        log("⚠️ Empty name — aborting", "#f87171");
+        showStatus("⚠️ Please enter a name first!", "error");
+        return;
+      }
+
+      try {
+        log("Saving to Firestore...", "#facc15");
+        const docRef = await addDoc(collection(db, "users"), {
+          name:      name,
+          timestamp: new Date().toISOString()
+        });
+        log("Saved! Doc ID: " + docRef.id, "#4ade80");
+        showStatus("✅ Data save ho gaya! 🔥", "success");
+        document.getElementById("nameInput").value = "";
+      } catch (err) {
+        log("❌ Firestore error: " + err.code + " — " + err.message, "#f87171");
+        showStatus("❌ Error: " + err.message, "error");
+      }
+    });
+
+  } catch (err) {
+    log("❌ Firebase load failed: " + err.message, "#f87171");
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      alert("Firebase failed to load. Check your internet connection.");
+    });
+  }
+
+</script>
 </body>
 </html>
