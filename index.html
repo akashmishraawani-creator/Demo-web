@@ -15,17 +15,24 @@
     footer {padding:20px; text-align:center; background:#020617;}
   </style>
 </head>
-<body><header>
+
+<body>
+
+<header>
   <h1>🚀 Automate Your Work with AI</h1>
   <p>Generate, send and track tasks in seconds with our powerful SaaS tool.</p>
   <button class="btn">Get Started Free</button>
   <button class="btn">Watch Demo</button>
-</header><section>
+</header>
+
+<section>
   <h2>Problems We Solve</h2>
   <p>❌ Manual work takes too much time</p>
   <p>❌ Low productivity and poor results</p>
   <p>✅ Our AI automates everything in seconds</p>
-</section><section>
+</section>
+
+<section>
   <h2>Features</h2>
   <div class="features">
     <div class="card">
@@ -41,34 +48,49 @@
       <p>Save time with smart workflows</p>
     </div>
   </div>
-</section><section>
+</section>
+
+<section>
   <h2>How It Works</h2>
   <p>1. Enter your data</p>
   <p>2. AI generates output</p>
   <p>3. Track and improve</p>
-</section><section>
+</section>
+
+<section>
   <h2>Pricing</h2>
   <p>Free Plan - ₹0</p>
   <p>Pro Plan - ₹499/month</p>
   <p>Agency Plan - ₹1499/month</p>
-</section><section>
+</section>
+
+<section>
   <h2>Testimonials</h2>
   <p>"This tool saved me hours daily!" - Sartaj sheikh</p>
-</section><section>
+</section>
+
+<section>
   <h2>Ready to Grow?</h2>
-  <button class="btn">Start Free Trial</button>
-</section><footer>
+
+  <!-- ✅ YAHI INPUT + BUTTON ADD KIYA -->
+  <input type="text" id="name" placeholder="Enter name">
+  <br><br>
+  <button class="btn" onclick="saveData()">Save</button>
+
+</section>
+
+<footer>
   <p>© 2026 AI SaaS Tool | Contact | Privacy Policy</p>
 </footer> 
+
 <script type="module">
-  // Import the functions you need from the SDKs you need
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  <!-- ✅ FIRESTORE IMPORT ADD KIYA -->
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyDyM2Ws5dzUsnZr1pRbshZ77mgB-RbrpIg",
     authDomain: "fir-saas-5dba9.firebaseapp.com",
@@ -79,9 +101,28 @@
     measurementId: "G-XZY2PDGJ9H"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+
+  <!-- ✅ DATABASE CONNECT -->
+  const db = getFirestore(app);
+
+  <!-- ✅ FUNCTION ADD KIYA -->
+  window.saveData = async function () {
+    const name = document.getElementById("name").value;
+
+    try {
+      await addDoc(collection(db, "users"), {
+        name: name
+      });
+      alert("Data save ho gaya 🔥");
+    } catch (e) {
+      alert("Error aa gaya ❌");
+      console.log(e);
+    }
+  }
+
 </script>
- </body>
-            </html>
+
+</body>
+</html>
