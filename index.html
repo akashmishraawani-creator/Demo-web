@@ -1,18 +1,21 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI SaaS Tool</title>
   <style>
-    body {font-family: Arial, sans-serif; margin:0; background:#0f172a; color:#fff;}
-    header {padding:60px 20px; text-align:center;}
-    h1 {font-size:40px;}
-    p {color:#cbd5e1;}
-    .btn {padding:12px 20px; margin:10px; background:#3b82f6; color:#fff; border:none; border-radius:6px; cursor:pointer;}
-    section {padding:60px 20px; text-align:center;}
-    .features {display:flex; flex-wrap:wrap; justify-content:center; gap:20px;}
-    .card {background:#1e293b; padding:20px; border-radius:10px; width:250px;}
-    footer {padding:20px; text-align:center; background:#020617;}
+    body { font-family: Arial, sans-serif; margin: 0; background: #0f172a; color: #fff; }
+    header { padding: 60px 20px; text-align: center; }
+    h1 { font-size: 40px; }
+    p { color: #cbd5e1; }
+    .btn { padding: 12px 20px; margin: 10px; background: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    .btn:hover { background: #2563eb; }
+    section { padding: 60px 20px; text-align: center; }
+    .features { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+    .card { background: #1e293b; padding: 20px; border-radius: 10px; width: 250px; }
+    footer { padding: 20px; text-align: center; background: #020617; }
+    input[type="text"] { padding: 10px; border-radius: 6px; border: none; font-size: 16px; width: 250px; }
   </style>
 </head>
 
@@ -71,25 +74,21 @@
 
 <section>
   <h2>Ready to Grow?</h2>
-
-  <!-- ✅ YAHI INPUT + BUTTON ADD KIYA -->
   <input type="text" id="name" placeholder="Enter name">
   <br><br>
   <button class="btn" id="saveBtn">Save</button>
-
+  <p id="statusMsg" style="color:#4ade80; display:none;">Data save ho gaya 🔥</p>
 </section>
 
 <footer>
   <p>© 2026 AI SaaS Tool | Contact | Privacy Policy</p>
-</footer> 
+</footer>
 
+<!-- ✅ FIX 1: Correct Firebase SDK version (10.x) -->
 <script type="module">
-
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
-
-  <!-- ✅ FIRESTORE IMPORT ADD KIYA -->
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDyM2Ws5dzUsnZr1pRbshZ77mgB-RbrpIg",
@@ -101,28 +100,40 @@
     measurementId: "G-XZY2PDGJ9H"
   };
 
+  // ✅ FIX 2: Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-
-  <!-- ✅ DATABASE CONNECT -->
   const db = getFirestore(app);
 
-  <!-- ✅ FUNCTION ADD KIYA -->
-  window.saveData = async function () {
-    const name = document.getElementById("name").value;
+  // ✅ FIX 3: Event listener INSIDE the module (not outside)
+  document.getElementById("saveBtn").addEventListener("click", async () => {
+    const name = document.getElementById("name").value.trim();
+
+    // ✅ FIX 4: Validate empty input
+    if (!name) {
+      alert("Please enter a name first!");
+      return;
+    }
 
     try {
       await addDoc(collection(db, "users"), {
-        name: name
+        name: name,
+        timestamp: new Date()
       });
-      alert("Data save ho gaya 🔥");
-    } catch (e) {
-      alert("Error aa gaya ❌");
-      console.log(e);
-    }
-  }
 
-</script> 
-document.getElementById("saveBtn").addEventListener("click", saveData);
+      // ✅ FIX 5: Show success message on page (better than alert)
+      const msg = document.getElementById("statusMsg");
+      msg.style.display = "block";
+      document.getElementById("name").value = "";
+
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+
+    } catch (e) {
+      console.error("Firebase Error:", e);
+      alert("Error aa gaya ❌: " + e.message);
+    }
+  });
+</script>
+
 </body>
 </html>
