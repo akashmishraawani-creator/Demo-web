@@ -1,72 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI SaaS Tool</title>
-
+  <title>Auto Follow-up SaaS</title>
   <style>
-    body { font-family: Arial; margin:0; background:#0f172a; color:#fff; text-align:center; }
-    section { padding:50px 20px; }
-    .btn { padding:12px 20px; background:#3b82f6; color:#fff; border:none; border-radius:6px; cursor:pointer; }
-    input { padding:10px; border-radius:6px; border:none; margin:10px; }
-    #msg { margin-top:10px; }
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .box {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px auto;
+      width: 300px;
+    }
+    input, textarea {
+      width: 90%;
+      padding: 10px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      padding: 10px 20px;
+      background: #22c55e;
+      border: none;
+      border-radius: 5px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
-
 </head>
 
 <body>
 
-<h1>🚀 AI Tool</h1>
+<h1>📲 WhatsApp Auto Follow-up SaaS</h1>
 
-<section>
-  <h2>Enter Name</h2>
-  <input type="text" id="nameInput" placeholder="Enter name">
-  <br>
-  <button class="btn" id="saveBtn">Save</button>
-  <p id="msg"></p>
-</section>
+<div class="box">
+  <h3>Add Lead</h3>
+  <input id="name" placeholder="Name">
+  <input id="phone" placeholder="Phone Number">
+  <button onclick="addLead()">Add Lead</button>
+</div>
 
-<script type="module">
+<div class="box">
+  <h3>Follow-up Message</h3>
+  <textarea id="msg1">Hi {{name}}, thanks for your inquiry 😊</textarea>
+  <textarea id="msg2">Just checking, are you interested?</textarea>
+  <textarea id="msg3">Last reminder, offer ending soon!</textarea>
+</div>
 
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<div class="box">
+  <h3>Leads</h3>
+  <ul id="leadList"></ul>
+</div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDyM2Ws5dzUsnZr1pRbshZ77mgB-RbrpIg",
-    authDomain: "fir-saas-5dba9.firebaseapp.com",
-    projectId: "fir-saas-5dba9",
-  };
+<script>
+function addLead() {
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  let li = document.createElement("li");
+  li.innerText = name + " (" + phone + ")";
+  document.getElementById("leadList").appendChild(li);
 
-  const msg = document.getElementById("msg");
+  // Fake automation demo
+  setTimeout(() => {
+    alert("Message sent to " + name);
+  }, 2000);
 
-  document.getElementById("saveBtn").addEventListener("click", async () => {
+  setTimeout(() => {
+    alert("Follow-up 1 sent to " + name);
+  }, 5000);
 
-    const name = document.getElementById("nameInput").value.trim();
-
-    if (!name) {
-      msg.innerText = "❌ Name likh pehle";
-      return;
-    }
-
-    try {
-      await addDoc(collection(db, "users"), {
-        name: name
-      });
-
-      msg.innerText = "✅ Data save ho gaya 🔥";
-      document.getElementById("nameInput").value = "";
-
-    } catch (err) {
-      msg.innerText = "❌ Error: " + err.message;
-      console.log(err);
-    }
-
-  });
-
+  setTimeout(() => {
+    alert("Follow-up 2 sent to " + name);
+  }, 8000);
+}
 </script>
 
 </body>
