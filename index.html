@@ -3,82 +3,647 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FollowFlow — WhatsApp Auto Follow-up SaaS</title>
-
+<title>ReplyFlow AI — Intelligent Telegram Automation</title>
+<meta name="description" content="Automate your Telegram conversations with AI precision. Capture, engage, and convert every lead automatically.">
 <style>
-/* ── SYSTEM FONTS (no external load needed) ── */
-@import url('data:text/css,');
-
-:root {
-  --cream: #FFF8E7;
-  --cream2: #FFF3D0;
-  --gold: #FFD77A;
-  --gold-rich: #E6A520;
-  --gold-dark: #C87A00;
-  --brown: #7A4A00;
-  --brown2: #9B6A1A;
-  --brown3: #5C3A0A;
-  --white: #FFFFFF;
-  --r10: 10px;
-  --r16: 16px;
-  --r24: 24px;
-  --t: 0.28s ease;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#7B7F85;--surface:#F5F6F7;--accent:#C1C4C8;--dark:#2B2E33;
+--radius:14px;--shadow:0 4px 24px rgba(43,46,51,.12);--transition:0.3s cubic-bezier(.4,0,.2,1);
 }
+html{scroll-behavior:smooth;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--dark);line-height:1.6}
+body{background:var(--bg);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button,input,textarea{font-family:inherit;border:none;outline:none}
+img{max-width:100%}
 
-/* (TUMHARA POORA CSS SAME HAI — kuch nahi hataya) */
+/* ===== UTILITIES ===== */
+.container{max-width:1140px;margin:0 auto;padding:0 24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 32px;border-radius:10px;font-weight:600;font-size:.95rem;cursor:pointer;transition:var(--transition);letter-spacing:.3px}
+.btn-primary{background:var(--dark);color:#fff}
+.btn-primary:hover{background:#3d4147;transform:translateY(-2px);box-shadow:0 8px 28px rgba(43,46,51,.25)}
+.btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.35)}
+.btn-outline:hover{background:rgba(255,255,255,.1);border-color:#fff;transform:translateY(-2px)}
+.section-title{font-size:2rem;font-weight:700;text-align:center;margin-bottom:12px}
+.section-sub{text-align:center;color:#555;max-width:560px;margin:0 auto 48px;font-size:1.05rem}
 
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: sans-serif; }
+/* ===== NAVBAR ===== */
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:100;padding:16px 0;transition:var(--transition)}
+.navbar.scrolled{background:rgba(43,46,51,.92);backdrop-filter:blur(16px);box-shadow:0 2px 20px rgba(0,0,0,.15)}
+.navbar .container{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.35rem;font-weight:800;color:#fff;letter-spacing:-.5px}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:rgba(255,255,255,.8);font-size:.9rem;font-weight:500;transition:var(--transition)}
+.nav-links a:hover{color:#fff}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.hamburger span{width:24px;height:2px;background:#fff;border-radius:2px;transition:var(--transition)}
 
-/* 🔥 FIXED PART */
-.tbl-head {
-  display:flex; align-items:center; justify-content:space-between;
+/* ===== HERO ===== */
+.hero{min-height:100vh;display:flex;align-items:center;background:linear-gradient(160deg,var(--bg) 0%,var(--dark) 100%);position:relative;overflow:hidden;padding:120px 0 80px}
+.hero::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(193,196,200,.15) 0%,transparent 70%);top:-100px;right:-100px;border-radius:50%}
+.hero::after{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(193,196,200,.08) 0%,transparent 70%);bottom:-200px;left:-150px;border-radius:50%}
+.hero-content{position:relative;z-index:2;max-width:680px}
+.hero h1{font-size:clamp(2.2rem,5vw,3.4rem);color:#fff;font-weight:800;line-height:1.15;margin-bottom:20px;letter-spacing:-.5px}
+.hero p{font-size:1.15rem;color:rgba(255,255,255,.75);margin-bottom:36px;line-height:1.7;max-width:540px}
+.hero-buttons{display:flex;gap:16px;flex-wrap:wrap}
+.hero-visual{position:relative;z-index:2;flex:1;display:flex;justify-content:center;align-items:center}
+.hero .container{display:flex;align-items:center;gap:60px}
+.hero-mockup{width:100%;max-width:420px;background:rgba(255,255,255,.07);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:32px;color:#fff}
+.mockup-header{display:flex;align-items:center;gap:8px;margin-bottom:24px}
+.mockup-dot{width:10px;height:10px;border-radius:50%}
+.mockup-line{height:12px;background:rgba(255,255,255,.12);border-radius:6px;margin-bottom:12px}
+.mockup-line:nth-child(2){width:80%}
+.mockup-line:nth-child(3){width:60%}
+.mockup-line:nth-child(4){width:90%}
+.mockup-line:nth-child(5){width:45%}
+.mockup-stat{display:flex;gap:12px;margin-top:20px}
+.mockup-stat div{flex:1;background:rgba(255,255,255,.08);border-radius:10px;padding:16px;text-align:center}
+.mockup-stat span{display:block;font-size:1.4rem;font-weight:700}
+.mockup-stat small{font-size:.75rem;opacity:.6}
+
+/* ===== FEATURES ===== */
+.features{background:var(--surface);padding:100px 0}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px}
+.feature-card{background:#fff;border:1px solid var(--accent);border-radius:var(--radius);padding:32px 28px;transition:var(--transition);position:relative;overflow:hidden}
+.feature-card:hover{transform:translateY(-6px);box-shadow:0 12px 40px rgba(43,46,51,.1)}
+.feature-card.coming-soon{opacity:.65;pointer-events:none}
+.feature-card .badge{position:absolute;top:16px;right:16px;background:var(--accent);color:var(--dark);font-size:.7rem;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.feature-card .badge.active{background:var(--dark);color:#fff}
+.feature-icon{width:48px;height:48px;background:var(--dark);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:1.3rem}
+.feature-card h3{font-size:1.15rem;font-weight:700;margin-bottom:10px}
+.feature-card p{color:#666;font-size:.92rem;line-height:1.6}
+
+/* ===== HOW IT WORKS ===== */
+.how-it-works{background:var(--bg);padding:100px 0}
+.how-it-works .section-title,.how-it-works .section-sub{color:#fff}
+.how-it-works .section-sub{color:rgba(255,255,255,.65)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px;position:relative}
+.step{background:rgba(255,255,255,.08);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:36px 28px;text-align:center;color:#fff;transition:var(--transition)}
+.step:hover{background:rgba(255,255,255,.12);transform:translateY(-4px)}
+.step-num{width:52px;height:52px;background:var(--dark);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.2rem;font-weight:800;border:2px solid var(--accent)}
+.step h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.step p{font-size:.88rem;opacity:.7;line-height:1.5}
+
+/* ===== PRICING ===== */
+.pricing{background:var(--surface);padding:100px 0}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;max-width:700px;margin:0 auto}
+.price-card{background:#fff;border:2px solid var(--accent);border-radius:var(--radius);padding:40px 32px;text-align:center;transition:var(--transition);position:relative}
+.price-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.price-card.featured{border-color:var(--dark);box-shadow:0 8px 40px rgba(43,46,51,.15);transform:scale(1.03)}
+.price-card.featured:hover{transform:scale(1.03) translateY(-4px)}
+.price-card .plan-badge{display:inline-block;background:var(--dark);color:#fff;font-size:.7rem;font-weight:700;padding:5px 16px;border-radius:20px;margin-bottom:16px;text-transform:uppercase;letter-spacing:.5px}
+.price-card h3{font-size:1.2rem;font-weight:700;margin-bottom:8px}
+.price-card .price{font-size:2.8rem;font-weight:800;color:var(--dark);margin:16px 0 4px}
+.price-card .price span{font-size:1rem;font-weight:400;color:#888}
+.price-card ul{list-style:none;text-align:left;margin:24px 0;padding:0}
+.price-card ul li{padding:8px 0;font-size:.92rem;color:#555;display:flex;align-items:center;gap:10px}
+.price-card ul li::before{content:'✓';color:var(--dark);font-weight:700;font-size:.85rem}
+.price-card .btn{width:100%;margin-top:8px}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials{background:var(--bg);padding:100px 0}
+.testimonials .section-title,.testimonials .section-sub{color:#fff}
+.testimonials .section-sub{color:rgba(255,255,255,.65)}
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.testimonial-card{background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:32px 28px;color:#fff;transition:var(--transition)}
+.testimonial-card:hover{background:rgba(255,255,255,.1);transform:translateY(-3px)}
+.testimonial-card .stars{color:var(--accent);font-size:1rem;margin-bottom:16px;letter-spacing:2px}
+.testimonial-card blockquote{font-size:.95rem;line-height:1.7;opacity:.85;margin-bottom:20px;font-style:italic}
+.testimonial-author{display:flex;align-items:center;gap:12px}
+.author-avatar{width:42px;height:42px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:var(--dark)}
+.author-info strong{display:block;font-size:.9rem}
+.author-info span{font-size:.78rem;opacity:.55}
+
+/* ===== FOOTER ===== */
+.footer{background:var(--dark);color:rgba(255,255,255,.7);padding:60px 0 32px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer h4{color:#fff;font-size:1rem;font-weight:700;margin-bottom:16px}
+.footer p{font-size:.88rem;line-height:1.7;max-width:280px}
+.footer ul{list-style:none;padding:0}
+.footer ul li{margin-bottom:10px}
+.footer ul a{font-size:.88rem;transition:var(--transition)}
+.footer ul a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;text-align:center;font-size:.82rem;opacity:.6}
+
+/* ===== DASHBOARD ===== */
+#landing{display:block}
+#dashboard{display:none}
+.dashboard{min-height:100vh;display:flex;background:var(--bg)}
+.sidebar{width:240px;background:var(--dark);color:#fff;padding:24px 0;display:flex;flex-direction:column;min-height:100vh;position:fixed;left:0;top:0;z-index:50}
+.sidebar .logo{padding:0 24px;margin-bottom:32px;font-size:1.15rem}
+.sidebar-menu{list-style:none;padding:0;flex:1}
+.sidebar-menu li{padding:0}
+.sidebar-menu a{display:flex;align-items:center;gap:12px;padding:12px 24px;color:rgba(255,255,255,.6);font-size:.9rem;font-weight:500;transition:var(--transition);border-left:3px solid transparent}
+.sidebar-menu a:hover,.sidebar-menu a.active{color:#fff;background:rgba(255,255,255,.06);border-left-color:var(--accent)}
+.sidebar-menu a.active{background:rgba(193,196,200,.12)}
+.sidebar-icon{font-size:1.1rem;width:20px;text-align:center}
+.dash-main{flex:1;margin-left:240px;padding:32px;min-height:100vh}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.dash-header h1{font-size:1.6rem;font-weight:700;color:var(--dark)}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;margin-bottom:32px}
+.dash-card{background:#fff;border:1px solid var(--accent);border-radius:var(--radius);padding:28px;transition:var(--transition)}
+.dash-card:hover{box-shadow:var(--shadow)}
+.dash-card h3{font-size:1.05rem;font-weight:700;margin-bottom:16px;color:var(--dark)}
+.dash-card label{display:block;font-size:.82rem;font-weight:600;color:#555;margin-bottom:6px;margin-top:12px}
+.dash-card label:first-of-type{margin-top:0}
+.dash-input{width:100%;padding:11px 14px;border:1px solid var(--accent);border-radius:8px;font-size:.9rem;transition:var(--transition);background:var(--surface)}
+.dash-input:focus{border-color:var(--dark);box-shadow:0 0 0 3px rgba(43,46,51,.08)}
+textarea.dash-input{resize:vertical;min-height:70px}
+.dash-btn{margin-top:16px;padding:11px 24px;background:var(--dark);color:#fff;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;transition:var(--transition);border:none}
+.dash-btn:hover{background:#3d4147;transform:translateY(-1px);box-shadow:0 4px 16px rgba(43,46,51,.2)}
+.dash-btn.lg{width:100%;padding:16px;font-size:1rem;margin-top:0}
+.start-card{background:var(--dark);color:#fff;text-align:center;padding:40px;border-color:transparent}
+.start-card h3{color:#fff}
+.start-card p{opacity:.6;margin-bottom:20px;font-size:.9rem}
+.start-card .dash-btn{background:#fff;color:var(--dark)}
+.start-card .dash-btn:hover{background:var(--surface);box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.leads-table{width:100%;border-collapse:separate;border-spacing:0}
+.leads-table th{text-align:left;padding:12px 16px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;border-bottom:2px solid var(--accent)}
+.leads-table td{padding:12px 16px;font-size:.9rem;border-bottom:1px solid #eee}
+.status-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;background:var(--accent);color:var(--dark)}
+.status-badge.sent{background:#d4edda;color:#155724}
+.status-badge.followup{background:#fff3cd;color:#856404}
+
+.mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px}
+.sidebar-close{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;position:absolute;top:16px;right:16px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .hero .container{flex-direction:column;text-align:center}
+  .hero p{margin-left:auto;margin-right:auto}
+  .hero-buttons{justify-content:center}
+  .hero-visual{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .pricing-grid{grid-template-columns:1fr;max-width:380px}
+  .price-card.featured{transform:none}
+  .price-card.featured:hover{transform:translateY(-4px)}
 }
-
+@media(max-width:768px){
+  .nav-links{display:none;position:fixed;top:0;right:0;width:260px;height:100vh;background:var(--dark);flex-direction:column;padding:80px 32px 32px;gap:20px;z-index:200}
+  .nav-links.open{display:flex}
+  .hamburger{display:flex;z-index:201}
+  .sidebar{transform:translateX(-100%);transition:var(--transition)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-close{display:block}
+  .dash-main{margin-left:0;padding:20px}
+  .mobile-menu-btn{display:block}
+  .dash-header h1{font-size:1.2rem}
+  .footer-grid{grid-template-columns:1fr}
+  .testimonials-grid,.features-grid,.steps{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
-
 <body>
 
-<!-- LANDING PAGE -->
-<div id="page-landing">
-  <nav>
-    <a class="logo">FollowFlow</a>
-    <div class="nav-btns">
-      <button class="btn btn-gold" onclick="goDash()">Dashboard</button>
-    </div>
-  </nav>
+<!-- ===== LANDING PAGE ===== -->
+<div id="landing">
 
-  <section class="hero">
-    <div class="hero-wrap">
-      <div>
-        <h1>Automate Your <em>WhatsApp Follow-ups</em></h1>
-        <p>Never lose a lead again. FollowFlow automatically sends follow-ups.</p>
-        <button class="btn btn-gold" onclick="goDash()">Get Started</button>
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <a href="#" class="logo">Reply<span>Flow</span> AI</a>
+    <div class="nav-links" id="navLinks">
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#" onclick="showDashboard()" class="btn btn-primary" style="padding:10px 22px;font-size:.85rem">Dashboard</a>
+    </div>
+    <div class="hamburger" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1>Automate Your Telegram Conversations with AI Precision</h1>
+      <p>Capture, engage, and convert every lead automatically using intelligent Telegram bot automation.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="showDashboard()">Start Free Demo</button>
+        <button class="btn btn-outline" onclick="showDashboard()">Access Dashboard</button>
       </div>
     </div>
-  </section>
-</div>
+    <div class="hero-visual">
+      <div class="hero-mockup">
+        <div class="mockup-header">
+          <div class="mockup-dot" style="background:#ff5f57"></div>
+          <div class="mockup-dot" style="background:#ffbd2e"></div>
+          <div class="mockup-dot" style="background:#28c940"></div>
+        </div>
+        <div class="mockup-line" style="width:70%"></div>
+        <div class="mockup-line"></div>
+        <div class="mockup-line"></div>
+        <div class="mockup-line"></div>
+        <div class="mockup-line"></div>
+        <div class="mockup-stat">
+          <div><span>2,847</span><small>Leads</small></div>
+          <div><span>94%</span><small>Response</small></div>
+          <div><span>3.2x</span><small>ROI</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<!-- DASHBOARD -->
-<div id="page-dash" style="display:none;">
-  <div style="padding:40px;">
-    <h1>Dashboard</h1>
-    <p>Your SaaS working 🚀</p>
-    <button onclick="goHome()">Back</button>
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-title">Powerful Automation Features</h2>
+    <p class="section-sub">Everything you need to automate conversations and grow your business effortlessly.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="badge active">Active</span>
+        <div class="feature-icon">✈️</div>
+        <h3>Telegram Auto Reply System</h3>
+        <p>Instantly respond to every Telegram message with AI-powered automated replies that feel human.</p>
+      </div>
+      <div class="feature-card">
+        <span class="badge active">Active</span>
+        <div class="feature-icon">🤖</div>
+        <h3>AI Smart Response Engine</h3>
+        <p>Context-aware AI that crafts personalized responses based on conversation history and intent.</p>
+      </div>
+      <div class="feature-card coming-soon">
+        <span class="badge">Coming Soon</span>
+        <div class="feature-icon">📸</div>
+        <h3>Instagram Automation</h3>
+        <p>Auto-reply to DMs, story mentions, and comments to capture every lead from Instagram.</p>
+      </div>
+      <div class="feature-card coming-soon">
+        <span class="badge">Coming Soon</span>
+        <div class="feature-icon">💬</div>
+        <h3>WhatsApp Automation</h3>
+        <p>Smart follow-up sequences and automated replies for WhatsApp Business conversations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works" id="how">
+  <div class="container">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Get started in minutes. No coding required.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Connect Telegram Bot</h3>
+        <p>Link your Telegram bot with a single token. Setup takes under 60 seconds.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Configure Smart Replies</h3>
+        <p>Set up your AI response templates and follow-up sequences with our visual editor.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Let Automation Run 24/7</h3>
+        <p>Sit back while ReplyFlow AI handles conversations, qualifies leads, and books meetings.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <h2 class="section-title">Simple, Transparent Pricing</h2>
+    <p class="section-sub">Start free, scale as you grow. No hidden fees.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Starter</h3>
+        <div class="price">$9<span>/month</span></div>
+        <ul>
+          <li>1 Telegram Bot</li>
+          <li>500 messages/month</li>
+          <li>Basic auto-replies</li>
+          <li>Email support</li>
+        </ul>
+        <button class="btn btn-primary" onclick="showDashboard()">Get Started</button>
+      </div>
+      <div class="price-card featured">
+        <span class="plan-badge">Most Popular</span>
+        <h3>Pro</h3>
+        <div class="price">$19<span>/month</span></div>
+        <ul>
+          <li>Unlimited Bots</li>
+          <li>Unlimited messages</li>
+          <li>AI Smart Responses</li>
+          <li>Lead management</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="btn btn-primary" onclick="showDashboard()">Start Pro Trial</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <h2 class="section-title">Trusted by 2,000+ Businesses</h2>
+    <p class="section-sub">See what our customers have to say about ReplyFlow AI.</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"ReplyFlow AI cut our response time from hours to seconds. We've seen a 40% increase in lead conversion since implementing it."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-avatar">AR</div>
+          <div class="author-info">
+            <strong>Alex Rivera</strong>
+            <span>CEO, Digital Agency</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The AI responses are incredibly natural. Our customers can't tell they're talking to a bot. It's been a game-changer for our support."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-avatar">SK</div>
+          <div class="author-info">
+            <strong>Sarah Kim</strong>
+            <span>Founder, E-commerce Brand</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <blockquote>"We manage 3,000+ leads through Telegram now. ReplyFlow handles the initial conversations perfectly, and we close more deals than ever."</blockquote>
+        <div class="testimonial-author">
+          <div class="author-avatar">MP</div>
+          <div class="author-info">
+            <strong>Michael Petrov</strong>
+            <span>Sales Director, SaaS Startup</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>ReplyFlow AI</h4>
+        <p>Intelligent Telegram automation for high-converting conversations. Built for modern businesses.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#how">How It Works</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2026 ReplyFlow AI. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+</div><!-- /landing -->
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dashboard">
+<div class="dashboard">
+  <aside class="sidebar" id="sidebar">
+    <button class="sidebar-close" onclick="closeSidebar()">&times;</button>
+    <a href="#" class="logo" style="display:block;margin-bottom:32px;padding:0 24px">Reply<span>Flow</span> AI</a>
+    <ul class="sidebar-menu">
+      <li><a href="#" class="active"><span class="sidebar-icon">📊</span>Dashboard</a></li>
+      <li><a href="#"><span class="sidebar-icon">🤖</span>Telegram Bot</a></li>
+      <li><a href="#"><span class="sidebar-icon">👥</span>Leads</a></li>
+      <li><a href="#"><span class="sidebar-icon">💬</span>Messages</a></li>
+      <li><a href="#"><span class="sidebar-icon">⚙️</span>Settings</a></li>
+    </ul>
+    <div style="padding:16px 24px;margin-top:auto">
+      <button class="dash-btn" style="width:100%;background:rgba(255,255,255,.1);font-size:.82rem" onclick="showLanding()">← Back to Site</button>
+    </div>
+  </aside>
+  <main class="dash-main">
+    <div class="dash-header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-menu-btn" onclick="openSidebar()" style="font-size:1.4rem;background:none;border:none;cursor:pointer">☰</button>
+        <h1>Dashboard</h1>
+      </div>
+      <span style="font-size:.85rem;color:#666">Welcome back 👋</span>
+    </div>
+
+    <div class="dash-grid">
+      <!-- Bot Connection -->
+      <div class="dash-card">
+        <h3>🤖 Connect Telegram Bot</h3>
+        <label>Bot Token</label>
+        <input class="dash-input" id="botToken" placeholder="Enter your Telegram bot token">
+        <button class="dash-btn" onclick="connectBot()">Connect Bot</button>
+      </div>
+
+      <!-- Add Lead -->
+      <div class="dash-card">
+        <h3>👤 Add New Lead</h3>
+        <label>Full Name</label>
+        <input class="dash-input" id="leadName" placeholder="John Doe">
+        <label>Phone Number</label>
+        <input class="dash-input" id="leadPhone" placeholder="+1 234 567 890">
+        <button class="dash-btn" onclick="addLead()">Add Lead</button>
+      </div>
+
+      <!-- AI Messages -->
+      <div class="dash-card" style="grid-column:1/-1">
+        <h3>💬 AI Message Sequences</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px">
+          <div>
+            <label>Message 1 — Initial Contact</label>
+            <textarea class="dash-input" placeholder="Hi {{name}}, thanks for reaching out! How can I help you today?"></textarea>
+          </div>
+          <div>
+            <label>Message 2 — Follow Up</label>
+            <textarea class="dash-input" placeholder="Hey {{name}}, just checking in. Would you like to learn more about our services?"></textarea>
+          </div>
+          <div>
+            <label>Message 3 — Closing</label>
+            <textarea class="dash-input" placeholder="{{name}}, I have a special offer for you. Shall we schedule a quick call?"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start Automation -->
+      <div class="dash-card start-card">
+        <h3>🚀 Start Automation</h3>
+        <p>Launch your AI-powered conversation automation engine.</p>
+        <button class="dash-btn lg" onclick="startAutomation()">Start Automation</button>
+      </div>
+
+      <!-- Leads Table -->
+      <div class="dash-card" style="grid-column:1/-1">
+        <h3>📋 Leads Overview</h3>
+        <div style="overflow-x:auto">
+          <table class="leads-table" id="leadsTable">
+            <thead>
+              <tr><th>Name</th><th>Phone</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Emma Wilson</td><td>+1 555 0101</td><td><span class="status-badge sent">Message Sent</span></td></tr>
+              <tr><td>James Chen</td><td>+1 555 0202</td><td><span class="status-badge followup">Follow-up Sent</span></td></tr>
+              <tr><td>Olivia Brown</td><td>+1 555 0303</td><td><span class="status-badge sent">Message Sent</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</div>
+<!-- 🤖 AI Chatbot -->
+<div class="dash-card">
+  <h3>🤖 AI Chatbot</h3>
+
+  <label>Enter Message</label>
+  <input type="text" id="inputBox" class="dash-input" placeholder="Type your message...">
+
+  <button class="dash-btn" onclick="sendMessage()">Generate AI Reply</button>
+
+  <p style="margin-top:10px;"><strong>Response:</strong></p>
+  <div id="output" style="background:#f1f1f1;padding:10px;border-radius:8px;">
+    Waiting for input...
   </div>
 </div>
-
 <script>
-function goDash(){
-  document.getElementById("page-landing").style.display="none";
-  document.getElementById("page-dash").style.display="block";
-}
-function goHome(){
-  document.getElementById("page-landing").style.display="block";
-  document.getElementById("page-dash").style.display="none";
-}
-</script>
+// Navigation
+function showDashboard(){document.getElementById('landing').style.display='none';document.getElementById('dashboard').style.display='block';window.scrollTo(0,0)}
+function showLanding(){document.getElementById('dashboard').style.display='none';document.getElementById('landing').style.display='block';window.scrollTo(0,0)}
 
+// Mobile nav
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open')}
+
+// Sidebar
+function openSidebar(){document.getElementById('sidebar').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open')}
+
+// Navbar scroll
+window.addEventListener('scroll',function(){document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60)});
+
+// Connect Bot
+function connectBot(){
+  var t=document.getElementById('botToken').value.trim();
+  if(!t){alert('Please enter a bot token.');return}
+  alert('✅ Bot connected successfully!');
+  document.getElementById('botToken').value='';
+}
+
+// Add Lead
+function addLead(){
+  var n=document.getElementById('leadName').value.trim();
+  var p=document.getElementById('leadPhone').value.trim();
+  if(!n||!p){alert('Please fill in all fields.');return}
+  var tb=document.getElementById('leadsTable').querySelector('tbody');
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td>'+n+'</td><td>'+p+'</td><td><span class="status-badge">New</span></td>';
+  tb.prepend(tr);
+  document.getElementById('leadName').value='';
+  document.getElementById('leadPhone').value='';
+}
+
+// Start Automation
+function startAutomation(){
+  var rows=document.getElementById('leadsTable').querySelectorAll('tbody tr');
+  if(!rows.length){alert('No leads to automate.');return}
+  rows.forEach(function(r,i){
+    setTimeout(function(){
+      var badge=r.querySelector('.status-badge');
+      badge.className='status-badge '+(i%2===0?'sent':'followup');
+      badge.textContent=i%2===0?'Message Sent':'Follow-up Sent';
+    },i*400);
+  });
+  alert('🚀 Automation started! Processing '+rows.length+' leads...');
+}
+
+// Sidebar menu active
+document.querySelectorAll('.sidebar-menu a').forEach(function(a){
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    document.querySelectorAll('.sidebar-menu a').forEach(function(x){x.classList.remove('active')});
+    this.classList.add('active');
+    closeSidebar();
+  });
+});
+</script> 
+  <script>
+
+// 🟢 ================= API CONNECTION START =================
+
+// 👉 Replace with your actual backend URL
+const API_URL = "https://backend-1-1zse.onrender.com/api/chat;
+
+// 👉 Chatbot function
+async function sendMessage() {
+
+  const input = document.getElementById("inputBox");
+  const output = document.getElementById("output");
+
+  const message = input.value.trim();
+
+  if (!message) {
+    alert("Please enter a message.");
+    return;
+  }
+
+  // 🔄 Loading state
+  output.innerText = "🤖 Generating response...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: message,
+        provider: "openrouter" // or "deepseek"
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Something went wrong. Please try again.");
+    }
+
+    // ✅ Show AI response
+    output.innerText = data.reply;
+
+  } catch (err) {
+    console.error(err);
+    output.innerText = "❌ Error: " + err.message;
+  }
+}
+
+// 🟢 ================= API CONNECTION END =================
+
+  </script>
 </body>
-</html>
+  </html>
