@@ -168,6 +168,40 @@ textarea.dash-input{resize:vertical;min-height:70px}
 .mobile-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:8px}
 .sidebar-close{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;position:absolute;top:16px;right:16px}
 
+/* ===== NEW CHATBOT STYLES ===== */
+.chatbot-card{background:#2B2E33 !important;border:1px solid rgba(255,255,255,.1) !important;padding:0 !important;overflow:hidden;display:flex;flex-direction:column;height:520px}
+.chatbot-card h3{color:#fff !important;padding:0 !important;margin:0 !important}
+
+.cb-header{padding:16px 20px;background:#32363C;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.cb-header .cb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6C63FF,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.cb-header .cb-info h3{font-size:15px;font-weight:600;letter-spacing:-.3px;margin:0 !important;padding:0 !important}
+.cb-header .cb-info span{font-size:11px;color:#8B8F96;display:flex;align-items:center;gap:4px}
+.cb-header .cb-info span::before{content:'';width:6px;height:6px;border-radius:50%;background:#22C55E;display:inline-block}
+
+.cb-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.cb-messages::-webkit-scrollbar{width:4px}
+.cb-messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
+
+.cb-msg{max-width:80%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.6;animation:cbFadeIn .3s ease}
+@keyframes cbFadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cb-msg.user{align-self:flex-end;background:#3B82F6;color:#fff;border-bottom-right-radius:4px}
+.cb-msg.ai{align-self:flex-start;background:#F5F6F7;color:#1a1a1a;border-bottom-left-radius:4px}
+.cb-msg.typing{color:#8B8F96;background:#3A3F45;font-style:italic}
+.cb-msg.error{background:#DC2626;color:#fff;align-self:center;font-size:12px;text-align:center}
+
+.cb-welcome{text-align:center;color:#6B7280;margin:auto;padding:30px 16px}
+.cb-welcome .cb-icon{font-size:40px;margin-bottom:10px}
+.cb-welcome h4{font-size:15px;color:#C1C4C8;margin-bottom:4px;font-weight:600}
+.cb-welcome p{font-size:12px}
+
+.cb-input-area{padding:12px 16px;background:#32363C;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px}
+.cb-input-area input{flex:1;padding:10px 14px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#2B2E33;color:#fff;font-size:13px;outline:none;transition:border .2s;font-family:inherit}
+.cb-input-area input:focus{border-color:#3B82F6}
+.cb-input-area input::placeholder{color:#6B7280}
+.cb-input-area button{padding:10px 18px;background:#3B82F6;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;font-family:inherit}
+.cb-input-area button:hover{background:#2563EB}
+.cb-input-area button:active{transform:scale(.95)}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:900px){
   .hero .container{flex-direction:column;text-align:center}
@@ -274,7 +308,7 @@ textarea.dash-input{resize:vertical;min-height:70px}
         <h3>Instagram Automation</h3>
         <p>Auto-reply to DMs, story mentions, and comments to capture every lead from Instagram.</p>
       </div>
-      <div class="feature-card coming-soon">
+     <div class="feature-card coming-soon">
         <span class="badge">Coming Soon</span>
         <div class="feature-icon">💬</div>
         <h3>WhatsApp Automation</h3>
@@ -502,43 +536,29 @@ textarea.dash-input{resize:vertical;min-height:70px}
       </div>
 
       <!-- =============================================
-           AI CHATBOT CARD — placed inside .dash-grid
-           after "Start Automation", before Leads Table
+           NEW AI CHATBOT CARD — WhatsApp-style chat UI
            ============================================= -->
-      <div class="dash-card" style="grid-column:1/-1">
-        <h3>🤖 AI Chatbot</h3>
-
-        <label>Enter Message</label>
-        <input
-          type="text"
-          id="inputBox"
-          class="dash-input"
-          placeholder="Type your message... (Press Enter to send)"
-        >
-
-        <button class="dash-btn" id="generateBtn" onclick="sendMessage()">
-          Generate AI Reply
-        </button>
-
-        <p style="margin-top:16px;font-size:.82rem;font-weight:600;color:#555;">Response:</p>
-        <div
-          id="output"
-          style="
-            margin-top:8px;
-            background:var(--surface);
-            border:1px solid var(--accent);
-            border-radius:8px;
-            padding:14px;
-            font-size:.9rem;
-            line-height:1.6;
-            color:var(--dark);
-            min-height:60px;
-          "
-        >
-          Waiting for input...
+      <div class="dash-card chatbot-card" style="grid-column:1/-1">
+        <div class="cb-header">
+          <div class="cb-avatar">🤖</div>
+          <div class="cb-info">
+            <h3>AI Chat Assistant</h3>
+            <span>Online</span>
+          </div>
+        </div>
+        <div class="cb-messages" id="chatMessages">
+          <div class="cb-welcome">
+            <div class="cb-icon">💬</div>
+            <h4>How can I help you today?</h4>
+            <p>Ask me anything — I'm powered by AI.</p>
+          </div>
+        </div>
+        <div class="cb-input-area">
+          <input type="text" id="cbInput" placeholder="Type your message..." autocomplete="off">
+          <button onclick="sendMessage()">Send</button>
         </div>
       </div>
-      <!-- END AI CHATBOT CARD -->
+      <!-- END NEW AI CHATBOT CARD -->
 
       <!-- Leads Table -->
       <div class="dash-card" style="grid-column:1/-1">
@@ -647,175 +667,109 @@ document.querySelectorAll('.sidebar-menu a').forEach(function (a) {
 
 
 // ============================================================
-// API CONNECTION START
+// API CONNECTION — same backend URL
 // ============================================================
 
-// ⚠️ Your Render backend URL — correct and ready to use
 var API_URL = "https://backend-1-1zse.onrender.com/api/chat";
-
-// Switch to "deepseek" here if you want to change AI provider
 var AI_PROVIDER = "openrouter";
 
+
 // ============================================================
-// BUTTON LOGIC — loading state helper
+// NEW CHATBOT — bubble-style chat logic
 // ============================================================
 
-function setLoading(isLoading) {
-  var btn   = document.getElementById('generateBtn');
-  var input = document.getElementById('inputBox');
+var chatMessages = document.getElementById('chatMessages');
+var cbInput = document.getElementById('cbInput');
 
-  btn.disabled      = isLoading;
-  btn.textContent   = isLoading ? '⏳ Generating...' : 'Generate AI Reply';
-  btn.style.opacity = isLoading ? '0.6' : '1';
-  btn.style.cursor  = isLoading ? 'not-allowed' : 'pointer';
-  input.disabled    = isLoading;
+// Send on Enter
+cbInput.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') sendMessage();
+});
+
+function addChatBubble(text, type) {
+  // Remove welcome on first message
+  var welcome = chatMessages.querySelector('.cb-welcome');
+  if (welcome) welcome.remove();
+
+  var div = document.createElement('div');
+  div.className = 'cb-msg ' + type;
+  div.textContent = text;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return div;
 }
 
-// ============================================================
-// MAIN CHAT FUNCTION
-// ============================================================
-
 async function sendMessage() {
-  var input  = document.getElementById('inputBox');
-  var output = document.getElementById('output');
+  var text = cbInput.value.trim();
+  if (!text) return;
 
-  var message = input.value.trim();
+  addChatBubble(text, 'user');
+  cbInput.value = '';
 
-  // BUTTON LOGIC — prevent empty submission
-  if (!message) {
-    input.style.borderColor = '#e74c3c';
-    input.focus();
-    setTimeout(function () { input.style.borderColor = ''; }, 1800);
-    return;
-  }
-
-  // Show loading state
-  setLoading(true);
-  output.style.color = '#888';
-  output.textContent = '🤖 Generating response...';
+  var loader = addChatBubble('Typing...', 'typing');
 
   try {
     var res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message:  message,
-        provider: AI_PROVIDER
-      })
+      body: JSON.stringify({ message: text, provider: AI_PROVIDER })
     });
+
+    if (!res.ok) throw new Error('Server error ' + res.status);
 
     var data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || 'Server error — status ' + res.status);
-    }
-
-    // ✅ Display AI reply
-    output.style.color = 'var(--dark)';
-    output.textContent = data.reply;
-
-    // Clear input on success
-    input.value = '';
-
+    loader.remove();
+    addChatBubble(data.reply || 'No response received.', 'ai');
   } catch (err) {
-    // ERROR HANDLING
-    handleApiError(err, output);
-  } finally {
-    setLoading(false);
-    input.focus();
+    loader.remove();
+    addChatBubble('⚠ Failed to get response. Check your connection.', 'error');
+    console.error('[ReplyFlow API Error]', err);
   }
 }
 
-// ERROR HANDLING
-// ============================================================
-
-function handleApiError(err, output) {
-  console.error('[ReplyFlow API Error]', err);
-
-  var isNetwork = (err.message === 'Failed to fetch');
-  var msg = isNetwork
-    ? '❌ Network error — check your connection or confirm the backend is live on Render.'
-    : '❌ Error: ' + err.message;
-
-  output.style.color = '#c0392b';
-  output.textContent = msg;
-}
-
-// API CONNECTION END
-// ============================================================
-
 
 // ============================================================
-// INIT — wire up Enter key support after DOM ready
-// ============================================================
-
-document.addEventListener('DOMContentLoaded', function () {
-  var inputBox = document.getElementById('inputBox');
-  if (inputBox) {
-    inputBox.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-  }
-});
-
-// ============================================================
-// SCALABLE PLATFORM HOOKS
-// Uncomment each send() body when your backend endpoint
-// for that platform is ready. No other changes needed.
+// SCALABLE PLATFORM HOOKS (original — untouched)
 // ============================================================
 
 var AutomationProviders = {
-
   telegram: {
     name: 'Telegram',
     send: async function (chatId, message) {
       console.log('[Telegram] chatId:', chatId, '| msg:', message);
-      // return await apiPost('/api/telegram/send', { chatId, message });
     }
   },
-
   instagram: {
     name: 'Instagram',
     send: async function (userId, message) {
       console.log('[Instagram] userId:', userId, '| msg:', message);
-      // return await apiPost('/api/instagram/send', { userId, message });
     }
   },
-
   whatsapp: {
     name: 'WhatsApp',
     send: async function (phone, message) {
       console.log('[WhatsApp] phone:', phone, '| msg:', message);
-      // return await apiPost('/api/whatsapp/send', { phone, message });
     }
   }
-
 };
 
-/**
- * Unified automation trigger.
- * Example: triggerAutomation('telegram', { recipient: '123456', message: 'Hello!' })
- */
 async function triggerAutomation(platform, payload) {
   var provider = AutomationProviders[platform];
   if (!provider) { console.warn('[Automation] Unknown platform:', platform); return; }
   await provider.send(payload.recipient, payload.message);
 }
 
-/** Generic POST helper — reuse for all future platform endpoints */
 async function apiPost(endpoint, body) {
   var base = API_URL.replace('/api/chat', '');
-  var res  = await fetch(base + endpoint, {
-    method:  'POST',
+  var res = await fetch(base + endpoint, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify(body)
+    body: JSON.stringify(body)
   });
   if (!res.ok) throw new Error('Request to ' + endpoint + ' failed: ' + res.status);
   return res.json();
 }
 </script>
 </body>
-        </html>
+  </html>
+  
