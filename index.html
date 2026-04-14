@@ -427,6 +427,7 @@ textarea.dash-input{resize:vertical;min-height:70px}
 
 </div><!-- /landing -->
 
+
 <!-- ===== DASHBOARD ===== -->
 <div id="dashboard">
 <div class="dashboard">
@@ -444,6 +445,7 @@ textarea.dash-input{resize:vertical;min-height:70px}
       <button class="dash-btn" style="width:100%;background:rgba(255,255,255,.1);font-size:.82rem" onclick="showLanding()">← Back to Site</button>
     </div>
   </aside>
+
   <main class="dash-main">
     <div class="dash-header">
       <div style="display:flex;align-items:center;gap:12px">
@@ -454,6 +456,7 @@ textarea.dash-input{resize:vertical;min-height:70px}
     </div>
 
     <div class="dash-grid">
+
       <!-- Bot Connection -->
       <div class="dash-card">
         <h3>🤖 Connect Telegram Bot</h3>
@@ -498,6 +501,45 @@ textarea.dash-input{resize:vertical;min-height:70px}
         <button class="dash-btn lg" onclick="startAutomation()">Start Automation</button>
       </div>
 
+      <!-- =============================================
+           AI CHATBOT CARD — placed inside .dash-grid
+           after "Start Automation", before Leads Table
+           ============================================= -->
+      <div class="dash-card" style="grid-column:1/-1">
+        <h3>🤖 AI Chatbot</h3>
+
+        <label>Enter Message</label>
+        <input
+          type="text"
+          id="inputBox"
+          class="dash-input"
+          placeholder="Type your message... (Press Enter to send)"
+        >
+
+        <button class="dash-btn" id="generateBtn" onclick="sendMessage()">
+          Generate AI Reply
+        </button>
+
+        <p style="margin-top:16px;font-size:.82rem;font-weight:600;color:#555;">Response:</p>
+        <div
+          id="output"
+          style="
+            margin-top:8px;
+            background:var(--surface);
+            border:1px solid var(--accent);
+            border-radius:8px;
+            padding:14px;
+            font-size:.9rem;
+            line-height:1.6;
+            color:var(--dark);
+            min-height:60px;
+          "
+        >
+          Waiting for input...
+        </div>
+      </div>
+      <!-- END AI CHATBOT CARD -->
+
       <!-- Leads Table -->
       <div class="dash-card" style="grid-column:1/-1">
         <h3>📋 Leads Overview</h3>
@@ -514,136 +556,266 @@ textarea.dash-input{resize:vertical;min-height:70px}
           </table>
         </div>
       </div>
-    </div>
+
+    </div><!-- /dash-grid -->
   </main>
 </div>
-</div>
-<!-- 🤖 AI Chatbot -->
-<div class="dash-card">
-  <h3>🤖 AI Chatbot</h3>
+</div><!-- /dashboard -->
 
-  <label>Enter Message</label>
-  <input type="text" id="inputBox" class="dash-input" placeholder="Type your message...">
 
-  <button class="dash-btn" onclick="sendMessage()">Generate AI Reply</button>
-
-  <p style="margin-top:10px;"><strong>Response:</strong></p>
-  <div id="output" style="background:#f1f1f1;padding:10px;border-radius:8px;">
-    Waiting for input...
-  </div>
-</div>
 <script>
-// Navigation
-function showDashboard(){document.getElementById('landing').style.display='none';document.getElementById('dashboard').style.display='block';window.scrollTo(0,0)}
-function showLanding(){document.getElementById('dashboard').style.display='none';document.getElementById('landing').style.display='block';window.scrollTo(0,0)}
+// ============================================================
+// CORE UI FUNCTIONS (original — untouched)
+// ============================================================
 
-// Mobile nav
-function toggleNav(){document.getElementById('navLinks').classList.toggle('open')}
+function showDashboard() {
+  document.getElementById('landing').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  window.scrollTo(0, 0);
+}
 
-// Sidebar
-function openSidebar(){document.getElementById('sidebar').classList.add('open')}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open')}
+function showLanding() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('landing').style.display = 'block';
+  window.scrollTo(0, 0);
+}
 
-// Navbar scroll
-window.addEventListener('scroll',function(){document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60)});
+function toggleNav() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// Navbar scroll effect
+window.addEventListener('scroll', function () {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+});
 
 // Connect Bot
-function connectBot(){
-  var t=document.getElementById('botToken').value.trim();
-  if(!t){alert('Please enter a bot token.');return}
+function connectBot() {
+  var t = document.getElementById('botToken').value.trim();
+  if (!t) { alert('Please enter a bot token.'); return; }
   alert('✅ Bot connected successfully!');
-  document.getElementById('botToken').value='';
+  document.getElementById('botToken').value = '';
 }
 
 // Add Lead
-function addLead(){
-  var n=document.getElementById('leadName').value.trim();
-  var p=document.getElementById('leadPhone').value.trim();
-  if(!n||!p){alert('Please fill in all fields.');return}
-  var tb=document.getElementById('leadsTable').querySelector('tbody');
-  var tr=document.createElement('tr');
-  tr.innerHTML='<td>'+n+'</td><td>'+p+'</td><td><span class="status-badge">New</span></td>';
+function addLead() {
+  var n = document.getElementById('leadName').value.trim();
+  var p = document.getElementById('leadPhone').value.trim();
+  if (!n || !p) { alert('Please fill in all fields.'); return; }
+  var tb = document.getElementById('leadsTable').querySelector('tbody');
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td>' + n + '</td><td>' + p + '</td><td><span class="status-badge">New</span></td>';
   tb.prepend(tr);
-  document.getElementById('leadName').value='';
-  document.getElementById('leadPhone').value='';
+  document.getElementById('leadName').value = '';
+  document.getElementById('leadPhone').value = '';
 }
 
 // Start Automation
-function startAutomation(){
-  var rows=document.getElementById('leadsTable').querySelectorAll('tbody tr');
-  if(!rows.length){alert('No leads to automate.');return}
-  rows.forEach(function(r,i){
-    setTimeout(function(){
-      var badge=r.querySelector('.status-badge');
-      badge.className='status-badge '+(i%2===0?'sent':'followup');
-      badge.textContent=i%2===0?'Message Sent':'Follow-up Sent';
-    },i*400);
+function startAutomation() {
+  var rows = document.getElementById('leadsTable').querySelectorAll('tbody tr');
+  if (!rows.length) { alert('No leads to automate.'); return; }
+  rows.forEach(function (r, i) {
+    setTimeout(function () {
+      var badge = r.querySelector('.status-badge');
+      badge.className = 'status-badge ' + (i % 2 === 0 ? 'sent' : 'followup');
+      badge.textContent = i % 2 === 0 ? 'Message Sent' : 'Follow-up Sent';
+    }, i * 400);
   });
-  alert('🚀 Automation started! Processing '+rows.length+' leads...');
+  alert('🚀 Automation started! Processing ' + rows.length + ' leads...');
 }
 
-// Sidebar menu active
-document.querySelectorAll('.sidebar-menu a').forEach(function(a){
-  a.addEventListener('click',function(e){
+// Sidebar menu active state
+document.querySelectorAll('.sidebar-menu a').forEach(function (a) {
+  a.addEventListener('click', function (e) {
     e.preventDefault();
-    document.querySelectorAll('.sidebar-menu a').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.sidebar-menu a').forEach(function (x) { x.classList.remove('active'); });
     this.classList.add('active');
     closeSidebar();
   });
 });
-</script> 
-  <script>
 
-// 🟢 ================= API CONNECTION START =================
+// FRONTEND UI END
+// ============================================================
 
-// 👉 Replace with your actual backend URL
-const API_URL = "https://backend-1-1zse.onrender.com/api/chat;
 
-// 👉 Chatbot function
+// ============================================================
+// API CONNECTION START
+// ============================================================
+
+// ⚠️ Your Render backend URL — correct and ready to use
+var API_URL = "https://backend-1-1zse.onrender.com/api/chat";
+
+// Switch to "deepseek" here if you want to change AI provider
+var AI_PROVIDER = "openrouter";
+
+// ============================================================
+// BUTTON LOGIC — loading state helper
+// ============================================================
+
+function setLoading(isLoading) {
+  var btn   = document.getElementById('generateBtn');
+  var input = document.getElementById('inputBox');
+
+  btn.disabled      = isLoading;
+  btn.textContent   = isLoading ? '⏳ Generating...' : 'Generate AI Reply';
+  btn.style.opacity = isLoading ? '0.6' : '1';
+  btn.style.cursor  = isLoading ? 'not-allowed' : 'pointer';
+  input.disabled    = isLoading;
+}
+
+// ============================================================
+// MAIN CHAT FUNCTION
+// ============================================================
+
 async function sendMessage() {
+  var input  = document.getElementById('inputBox');
+  var output = document.getElementById('output');
 
-  const input = document.getElementById("inputBox");
-  const output = document.getElementById("output");
+  var message = input.value.trim();
 
-  const message = input.value.trim();
-
+  // BUTTON LOGIC — prevent empty submission
   if (!message) {
-    alert("Please enter a message.");
+    input.style.borderColor = '#e74c3c';
+    input.focus();
+    setTimeout(function () { input.style.borderColor = ''; }, 1800);
     return;
   }
 
-  // 🔄 Loading state
-  output.innerText = "🤖 Generating response...";
+  // Show loading state
+  setLoading(true);
+  output.style.color = '#888';
+  output.textContent = '🤖 Generating response...';
 
   try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+    var res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: message,
-        provider: "openrouter" // or "deepseek"
+        message:  message,
+        provider: AI_PROVIDER
       })
     });
 
-    const data = await res.json();
+    var data = await res.json();
 
     if (!res.ok) {
-      throw new Error(data.error || "Something went wrong. Please try again.");
+      throw new Error(data.error || 'Server error — status ' + res.status);
     }
 
-    // ✅ Show AI response
-    output.innerText = data.reply;
+    // ✅ Display AI reply
+    output.style.color = 'var(--dark)';
+    output.textContent = data.reply;
+
+    // Clear input on success
+    input.value = '';
 
   } catch (err) {
-    console.error(err);
-    output.innerText = "❌ Error: " + err.message;
+    // ERROR HANDLING
+    handleApiError(err, output);
+  } finally {
+    setLoading(false);
+    input.focus();
   }
 }
 
-// 🟢 ================= API CONNECTION END =================
+// ERROR HANDLING
+// ============================================================
 
-  </script>
+function handleApiError(err, output) {
+  console.error('[ReplyFlow API Error]', err);
+
+  var isNetwork = (err.message === 'Failed to fetch');
+  var msg = isNetwork
+    ? '❌ Network error — check your connection or confirm the backend is live on Render.'
+    : '❌ Error: ' + err.message;
+
+  output.style.color = '#c0392b';
+  output.textContent = msg;
+}
+
+// API CONNECTION END
+// ============================================================
+
+
+// ============================================================
+// INIT — wire up Enter key support after DOM ready
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+  var inputBox = document.getElementById('inputBox');
+  if (inputBox) {
+    inputBox.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  }
+});
+
+// ============================================================
+// SCALABLE PLATFORM HOOKS
+// Uncomment each send() body when your backend endpoint
+// for that platform is ready. No other changes needed.
+// ============================================================
+
+var AutomationProviders = {
+
+  telegram: {
+    name: 'Telegram',
+    send: async function (chatId, message) {
+      console.log('[Telegram] chatId:', chatId, '| msg:', message);
+      // return await apiPost('/api/telegram/send', { chatId, message });
+    }
+  },
+
+  instagram: {
+    name: 'Instagram',
+    send: async function (userId, message) {
+      console.log('[Instagram] userId:', userId, '| msg:', message);
+      // return await apiPost('/api/instagram/send', { userId, message });
+    }
+  },
+
+  whatsapp: {
+    name: 'WhatsApp',
+    send: async function (phone, message) {
+      console.log('[WhatsApp] phone:', phone, '| msg:', message);
+      // return await apiPost('/api/whatsapp/send', { phone, message });
+    }
+  }
+
+};
+
+/**
+ * Unified automation trigger.
+ * Example: triggerAutomation('telegram', { recipient: '123456', message: 'Hello!' })
+ */
+async function triggerAutomation(platform, payload) {
+  var provider = AutomationProviders[platform];
+  if (!provider) { console.warn('[Automation] Unknown platform:', platform); return; }
+  await provider.send(payload.recipient, payload.message);
+}
+
+/** Generic POST helper — reuse for all future platform endpoints */
+async function apiPost(endpoint, body) {
+  var base = API_URL.replace('/api/chat', '');
+  var res  = await fetch(base + endpoint, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error('Request to ' + endpoint + ' failed: ' + res.status);
+  return res.json();
+}
+</script>
 </body>
-  </html>
+        </html>
